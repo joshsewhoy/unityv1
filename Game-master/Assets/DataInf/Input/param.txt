@@ -1,0 +1,4 @@
+timeRest1:0
+timeRest2:10
+timeQuestion:10
+timeAnswer:30

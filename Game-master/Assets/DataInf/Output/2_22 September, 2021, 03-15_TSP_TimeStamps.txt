@@ -1,0 +1,32 @@
+PartcipantID:2
+InitialTimeStamp:03-15-05-944
+block;trial;eventType;elapsedTime
+Instace3; Answer:0;LotteryTrial;52
+Instace3; Answer:0;LotteryTrial;82
+Instace3; Answer:0;LotteryTrial;83
+Instace3; Answer:1;ParticipantAnswer;649
+Instace3; Answer:1;InterTrialRest;698
+Instace2; Answer:1;LotteryTrial;803
+Instace2; Answer:1;LotteryTrial;839
+Instace2; Answer:1;LotteryTrial;840
+Instace2; Answer:1;ParticipantAnswer;1009
+Instace2; Answer:1;InterTrialRest;1045
+Instace4; Answer:1;LotteryTrial;1157
+Instace4; Answer:1;LotteryTrial;1188
+Instace4; Answer:1;LotteryTrial;1189
+Instace4; Answer:1;ParticipantAnswer;1365
+Instace4; Answer:1;InterTrialRest;1410
+Instace0; Answer:1;LotteryTrial;1511
+Instace0; Answer:1;LotteryTrial;1542
+Instace0; Answer:1;LotteryTrial;1543
+Instace0; Answer:1;ParticipantAnswer;1700
+Instace0; Answer:1;InterTrialRest;1740
+Instace5; Answer:1;LotteryTrial;1853
+Instace5; Answer:1;LotteryTrial;1885
+Instace5; Answer:1;LotteryTrial;1885
+Instace5; Answer:1;ParticipantAnswer;2116
+Instace5; Answer:1;InterTrialRest;2166
+Instace5; Answer:1;InterBlockRest;2266
+Instace8; Answer:1;LotteryTrial;12318
+Instace8; Answer:1;LotteryTrial;12348
+Instace8; Answer:1;LotteryTrial;12348
