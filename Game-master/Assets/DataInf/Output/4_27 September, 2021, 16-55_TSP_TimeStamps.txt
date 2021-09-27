@@ -1,0 +1,9 @@
+PartcipantID:4
+InitialTimeStamp:16-55-47-393
+no answer = 0; lottery1 = 1(left); lottery2 = 2(right)
+block;trial;eventType;elapsedTime(ms)
+name 4S16L; Block1; Instance177; Answer:2; ParticipantAnswer:3002; time taken:2944
+name 4S12R; Block1; Instance335; Answer:2; ParticipantAnswer:5087; time taken:1962
+name 4S74L; Block1; Instance235; Answer:2; ParticipantAnswer:6119; time taken:914
+name 8B; Block1; Instance7; Answer:2; ParticipantAnswer:7350; time taken:1114
+name D7L; Block1; Instance51; Answer:2; ParticipantAnswer:8071; time taken:602

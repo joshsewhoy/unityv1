@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System;
 using System.IO;
-using System.Linq; 
+using System.Linq;
 using Random = UnityEngine.Random;
-//using System.Diagnostics;
 
 public class GameManager : MonoBehaviour 
 {
@@ -30,7 +29,7 @@ public class GameManager : MonoBehaviour
 	public static int trial = 0;
 
 	//The total number of trials across all blocks
-	public static int TotalTrial = 10;
+	public static int TotalTrial = 135;
 
 	//Current block initialization
 	public static int block = 0;
@@ -38,30 +37,30 @@ public class GameManager : MonoBehaviour
 	private static bool showTimer;
 
 	//Intertrial rest time
-	public static float timeRest1=0f;
+	public static float timeRest1;
 
 	//The times listed are default settings. They are over-ridden by input files, so you need to change the input files to change times
 	//InterBlock rest time
-	public static float timeRest2=10;
+	public static float timeRest2;
 
 	//Time given for each trial (The total time the items are shown -With and without the question-)
-	public static float timeTrial=20;
+	public static float timeTrial;
 
 	//Time for seeing the TSP question 
-	public static float timeQuestion=5;
+	public static float timeQuestion;
 
 	//Time given for answering 
-	public static float timeAnswer=20;
+	public static float timeAnswer;
 
 	//Total number of trials in each block
-	private static int numberOfTrials = 10;
+	private static int numberOfTrials;
 
 	//Total number of blocks
-	private static int numberOfBlocks = 1;
+	private static int numberOfBlocks;
 
 	//This is also taken from input files, so in reality 63 instance files are loaded, not 3
 	//Number of instance files to be considered. From i1.txt to i_.txt..
-	public static int numberOfInstances = 10;
+	public static int numberOfInstances;
 
 	//The order of the instances to be presented
 	public static int[] instanceRandomization;
@@ -76,8 +75,12 @@ public class GameManager : MonoBehaviour
 
 	//Input and Outout Folders with respect to the Application.dataPath;
 	private static string inputFolder = "/DATAinf/Input/";
-	private static string inputFolderTSPInstances = "/DATAinf/Input/TSPInstances/";
 	private static string outputFolder = "/DATAinf/Output/";
+	private static string inputFolderTSPInstances = "/DATAinf/Input/TSPInstances/";
+
+	private static string inputFolderBaseInstances = "/DATAinf/Input/BaseInstances/";
+	private static string inputFolderDelayInstances = "/DATAinf/Input/DelayInstances/";
+	private static string inputFolderStateInstances = "/DATAinf/Input/StateInstances/";
 
 	//Can copy this code if time stamps are needed (likely) Stopwatch to calculate time of events.
 	private static System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
@@ -93,6 +96,7 @@ public class GameManager : MonoBehaviour
 	//A structure that contains the parameters of each instance
 	public struct TSPInstance
 	{
+		public string name;
 		public int[] o1rewards;
 		public float[] o1probs;
 		public int[] o1days;
@@ -100,39 +104,32 @@ public class GameManager : MonoBehaviour
 		public float[] o2probs;
 		public int[] o2days;
 
-		//public int ncities;
-		//public int maxdistance;
-
 		public string id;
 		public string type;
-
-		//public int solution;
-		/*public int[] cities;
-		public float[] coordinatesx;
-		public float[] coordinatesy;
-		public int[,] distancematrix;
-		public int[] distancevector;
-
-		public int ncities;
-		public int maxdistance;
-
-		public string id;
-		public string type;
-
-		public int solution;
-		*/
 	}
+
+	// Variables to record participants answer time
+	public static string ans_start;
+	public static string ans_end;
 
 	//distance travelled
 	public static int Distancetravelled;
 
+
 	//An array of all the instances to be uploaded from .txt files, i.e importing everything using the structure from above 
 	public static TSPInstance[] tspinstances;// = new TSPInstance[numberOfInstances];
+
+	/// <summary>
+	/// Picking instances.
+	/// </summary>
+	public List<string> base_i_list = new List<string>();
+	public List<string> delay_i_list = new List<string>();
+	public List<string> state_i_list = new List<string>();
+	public List<string> instances_list = new List<string>();
 
 	// Use this for initialization (this occurs at beginning of game)
 	void Awake () 
 	{
-
 		//Makes the Game manager a Singleton
 		if (instance == null) 
 		{
@@ -149,12 +146,12 @@ public class GameManager : MonoBehaviour
 		InitGame();
 		if (escena != "SetUp") 
 		{
-			saveTimeStamp(escena);
+			// Saves timestamp when lottery trial first appears
+			//saveTimeStamp(escena);
 		}
-
 	}
 
-	//Initializes the scene. One scene is setup, other is trial, other is Break....
+	//Initializes the scene. One scene is setup, other is trial, other is Break
 	void InitGame()
 	{
 		/*
@@ -179,30 +176,12 @@ public class GameManager : MonoBehaviour
 			block++; 
 			loadParameters ();
 			loadTSPInstance ();
+			Debug.Log("TSPinstances loaded");
 
-			//RandomizeTSPInstances ();
-			//randomizeButtons ();
 			boardScript.setupInitialScreen ();
-			//SceneManager.LoadScene (1);
-
 			//If it's the second scene, move incrementally through trials one at a time, set up the question with items only scene from the boardmanager, show the timer and 
 			//run it for the time the items should be there by themselves, do not show the question
 		} 
-
-		// Getting rid of trial
-		/*else if (escena == "Trial") 
-		{
-			trial++;
-			TotalTrial++;
-			showTimer = true;
-			boardScript.SetupScene ("Trial");
-
-			tiempo = timeQuestion;
-			totalTime = tiempo;
-
-			//If it's the third scene, set up the question with the 'answer' scene from the boardmanager, show/run the timer for the answer
-		} */
-
 
 		else if (escena == "LotteryTrial") 
 		{
@@ -214,6 +193,8 @@ public class GameManager : MonoBehaviour
 			boardScript.SetupScene ("LotteryTrial");
 			tiempo = timeAnswer;
 			totalTime = tiempo;
+
+			ans_start = timeStamp();
 
 			//If it's the fourth scene, don't show the timer and run it for the time between trials
 		} 
@@ -232,26 +213,17 @@ public class GameManager : MonoBehaviour
 			showTimer = true;
 			tiempo = timeRest2;
 			totalTime = tiempo;
-			//Debug.Log ("TiempoRest=" + tiempo);
-
-			//randomizeButtons ();
-			//SceneManager.LoadScene (1);
 		}
-
 	}
 
 	// Update is called once per frame
 	void Update () 
 	{
-
 		if (escena != "SetUp") 
 		{
 			startTimer ();
-			//pauseManager ();
 		}
 	}
-
-	//instances info .txt files seem to be working perfectly, trial info mistakenly labels each instance as the on after it, timestamps don't work at all
 
 	/// <summary>
 	/// Saves the headers for both files (Trial Info and Time Stamps)
@@ -260,116 +232,29 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	private static void saveHeaders()
 	{
-		
 		//name of the file and where to save it
 		identifierName = participantID + "_" + dateID + "_" + "TSP" + "_";
 		string folderPathSave = Application.dataPath + outputFolder;
 
-		//Saves instance info
-		//an array of string, a new variable called lines3
-		string[] lines3 = new string[numberOfInstances+2];
-		//the first two lines will show the following - "string": "parameter/input"
-		lines3[0]="PartcipantID:" + participantID;
-		lines3 [1] = "instanceNumber" + ";cy"  + ";co" + ";id" + ";type" + ";sol";
-
-		/*
-		int l = 2;
-		int tspn = 1;
-		foreach (TSPInstance tsp in tspinstances) 
-		{
-			//Without instance type and problem ID:
-			//lines [l] = "Instance:" + tspn + ";c=" + tsp.capacity + ";p=" + tsp.profit + ";w=" + string.Join (",", tsp.variables.Select (p => p.ToString ()).ToArray ()) + ";v=" + string.Join (",", tsp.literals.Select (p => p.ToString ()).ToArray ());
-			//With instance type and problem ID
-			lines3 [l] = tspn + ";" + string.Join (",", tsp.coordinatesx.Select (p => p.ToString ()).ToArray ())  + ";" + string.Join (",", tsp.coordinatesy.Select (p => p.ToString ()).ToArray ()) 
-				+ ";" + string.Join (",", tsp.distancevector.Select (p => p.ToString ()).ToArray ()) 
-				+ ";" + tsp.id + ";" + tsp.type + ";" + tsp.solution;
-
-			l++;
-			tspn++;
-		}*/
-
-		//using StreamWriter to write the above into an output file
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "InstancesInfo.txt",true)) 
-		{
-			foreach (string line in lines3)
-				outputFile.WriteLine(line);
-		}
-
-
-		// Trial Info file headers
-		string[] lines = new string[2];
-		lines[0]="PartcipantID:" + participantID;
-		lines [1] = "block;trial;answer;correct;timeSpent;itemsSelected;finaldistance;randomYes(1=Left:No/Right:Yes);instanceNumber;error";
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "TrialInfo.txt",true)) 
-		{
-			foreach (string line in lines)
-				outputFile.WriteLine(line);
-		}
-
-
 		// Time Stamps file headers
-		string[] lines1 = new string[3];
+		string[] lines1 = new string[4];
 		lines1[0]="PartcipantID:" + participantID;
 		lines1[1] = "InitialTimeStamp:" + initialTimeStamp;
-		lines1[2]="block;trial;eventType;elapsedTime";
+		lines1[2] = "no answer = 0; lottery1 = 1(left); lottery2 = 2(right)";
+		lines1[3]="block;trial;eventType;elapsedTime(ms)";
 		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "TimeStamps.txt",true)) 
 		{
 			foreach (string line in lines1)
 				outputFile.WriteLine(line);
 		}
-
-		//Headerds for Clicks file
-		string[] lines2 = new string[3];
-		lines2[0]="PartcipantID:" + participantID;
-		lines2[1] = "InitialTimeStamp:" + initialTimeStamp;
-		lines2[2]="block;trial;citynumber(100=Reset);In(1)/Out(0)/Reset(3);time"; 
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "Clicks.txt",true)) {
-			foreach (string line in lines2)
-				outputFile.WriteLine(line);
-		}
-
 	}
-
 
 	//Saves the data of a trial to a .txt file with the participants ID as filename using StreamWriter.
 	//If the file doesn't exist it creates it. Otherwise it adds on lines to the existing file.
 	//Each line in the File has the following structure: "trial;answer;timeSpent".
 	public static void save(string itemsSelected, int answer, float timeSpent, int randomYes, string error) 
 	{
-		/*
-		//disregard this...string xyCoordinates = instance.boardScript.getItemCoordinates ();//BoardManager.getItemCoordinates ();
-
-		//Get the instance number for this trial (take the block number, subtract 1 because indexing starts at 0. Then multiply it
-		//by numberOfTrials (i.e. 10, 10 per block) and add the trial number of this block. Thus, the 2nd trial of block 2 will be
-		//instance number 12 overall) and add 1 because the instanceRandomization is linked to array numbering in C#, which starts at 0;
-		int instanceNum = instanceRandomization [TotalTrial - 1] + 1;
-		int finaldistance = Distancetravelled;
-
-		//looks at the solution, it is either correct or incorrect
-		int solutionQ = tspinstances [instanceNum - 1].solution;
-		int correct = (solutionQ == answer) ? 1 : 0;
-
-		//what to save and the order in which to do so
-		//		string dataTrialText = trial + ";" + answer + ";" + correct + ";" + timeSpent + ";" + randomYes +";" + instanceNum + ";" + error;
-		string dataTrialText = block + ";" + trial + ";" + answer + ";" + correct + ";" + timeSpent + ";" + itemsSelected + ";" + finaldistance + ";" + randomYes +";" 
-			+ instanceNum + ";" + error;
-
-
-		//where to save
-		string[] lines = {dataTrialText};
-		string folderPathSave = Application.dataPath + outputFolder;
-
-		//This location can be used by unity to save a file if u open the game in any platform/computer:      Application.persistentDataPath;
-
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName +"TrialInfo.txt",true)) 
-		{
-			foreach (string line in lines)
-				outputFile.WriteLine(line);
-		}*/
-
-		//Options of streamwriter include: Write, WriteLine, WriteAsync, WriteLineAsync
 	}
-
 
 	/// <summary>
 	/// Saves the time stamp for a particular event type to the "TimeStamps" File
@@ -378,8 +263,11 @@ public class GameManager : MonoBehaviour
 	/// Event type: 1=ItemsNoQuestion;11=ItemsWithQuestion;2=AnswerScreen;21=ParticipantsAnswer;3=InterTrialScreen;4=InterBlockScreen;5=EndScreen
 	public static void saveTimeStamp(string eventType) 
 	{
-		//				string dataTrialText = /* block + ";" + */ trial + ";" + eventType + ";" + timeStamp();
-		string dataTrialText = "Instace" + BoardManager.randq + "; Answer:" + BoardManager.answer + ";" + eventType + ";" + timeStamp();
+		// Creating time taken to answer
+		int ans_time = int.Parse(ans_end) - int.Parse(ans_start);
+
+		// Outputting times to save file
+		string dataTrialText = "name " + BoardManager.i_name + "; Block" + block + "; Instance" + BoardManager.randq + "; Answer:" + BoardManager.answer + "; " + eventType + ":" + timeStamp() + "; time taken:" + ans_time;
 
 		string[] lines = {dataTrialText};
 		string folderPathSave = Application.dataPath + outputFolder;
@@ -392,32 +280,6 @@ public class GameManager : MonoBehaviour
 		}
 
 	}
-
-
-
-
-	/// <summary>
-	/// Saves the time stamp of every click made on the items 
-	/// </summary>
-	/// block ; trial ; clicklist (i.e. item number ; itemIn? (1: selcting; 0:deselecting) ; time of the click with respect to the begining of the trial)
-	/*public static void saveClicks(List<Vector3> clicksList) {
-
-		string folderPathSave = Application.dataPath + outputFolder;
-
-
-		string[] lines = new string[clicksList.Count];
-		int i = 0;
-		foreach (Vector3 clickito in clicksList) {
-			lines[i]= block + ";" + trial + ";" + clickito.x + ";" + clickito.z + ";" + clickito.y ; 
-			i++;
-		}
-		//This location can be used by unity to save a file if u open the game in any platform/computer:      Application.persistentDataPath;
-		using (StreamWriter outputFile = new StreamWriter(folderPathSave + identifierName + "Clicks.txt",true)) {
-			foreach (string line in lines)
-				outputFile.WriteLine(line);
-		} 
-
-	}*/
 
 	/*
 	 * Loads all of the instances to be uploaded form .txt files. Example of input file:
@@ -428,7 +290,7 @@ public class GameManager : MonoBehaviour
 	 *
 	 * The instances are stored as tspinstances structures in the array of structures: tspinstances
 	 * */
-	public static void loadTSPInstance()
+	public void loadTSPInstance()
 	{
 		//string folderPathLoad = Application.dataPath.Replace("Assets","") + "DATA/Input/KPInstances/";
 		string folderPathLoad = Application.dataPath + inputFolderTSPInstances;
@@ -462,6 +324,7 @@ public class GameManager : MonoBehaviour
 			}
 
 			//the following are all recorded as string (hence the S at the end) 
+			string nameS;
 			string o1rewardsS;
 			string o1probsS;
 			string o1daysS;
@@ -470,6 +333,7 @@ public class GameManager : MonoBehaviour
 			string o2daysS;
 
 			//grab all of those parameters as strings
+			dict.TryGetValue("name", out nameS);
 			dict.TryGetValue("o1rewards", out o1rewardsS);
 			dict.TryGetValue("o1probs", out o1probsS);
 			dict.TryGetValue("o1days", out o1daysS);
@@ -478,6 +342,7 @@ public class GameManager : MonoBehaviour
 			dict.TryGetValue("o2days", out o2daysS);
 
 			//convert (most of them) to integers, with variables and literals being arrays and the others single literals
+			tspinstances[k - 1].name = nameS;
 			tspinstances[k - 1].o1rewards = Array.ConvertAll(o1rewardsS.Substring(1, o1rewardsS.Length - 2).Split(','), int.Parse);
 			tspinstances[k - 1].o1probs = Array.ConvertAll(o1probsS.Substring(1, o1probsS.Length - 2).Split(','), float.Parse);
 			tspinstances[k - 1].o1days = Array.ConvertAll(o1daysS.Substring(1, o1daysS.Length - 2).Split(','), int.Parse);
@@ -485,81 +350,9 @@ public class GameManager : MonoBehaviour
 			tspinstances[k - 1].o2probs = Array.ConvertAll(o2probsS.Substring(1, o2probsS.Length - 2).Split(','), float.Parse);
 			tspinstances[k - 1].o2days = Array.ConvertAll(o2daysS.Substring(1, o2daysS.Length - 2).Split(','), int.Parse);
 
-			//tspinstances[k - 1].ncities = int.Parse(ncitiesS);
-			//tspinstances[k - 1].maxdistance = int.Parse(maxdistanceS);
-			//tspinstances[k - 1].solution = int.Parse(solutionS);
-
 			dict.TryGetValue("problemID", out tspinstances[k - 1].id);
 			dict.TryGetValue("instanceType", out tspinstances[k - 1].type);
 		}
-
-		/*
-		//string folderPathLoad = Application.dataPath.Replace("Assets","") + "DATA/Input/KPInstances/";
-		string folderPathLoad = Application.dataPath + inputFolderTSPInstances;
-		//		int linesInEachKPInstance = 4;
-		tspinstances = new TSPInstance[numberOfInstances];
-
-		for (int k = 1; k <= numberOfInstances; k++) {
-			//create a dictionary where all the variables and definitions are strings
-			var dict = new Dictionary<string, string> ();
-			//			//Use streamreader to read the input files if there are lines to read
-			//string[] KPInstanceText = new string[linesInEachKPInstance];
-			try {   // Open the text file using a stream reader.
-				using (StreamReader sr = new StreamReader (folderPathLoad + "i"+ k + ".txt")) {
-					//					for (int i = 0; i < linesInEachKPInstance; i++) {
-					//						string line = sr.ReadLine ();
-					//						string[] dataInLine = line.Split (':');
-					//						TSPInstanceText [i] = dataInLine [1];
-					//					}
-					string line;
-					while (!string.IsNullOrEmpty ((line = sr.ReadLine ()))) {
-						string[] tmp = line.Split (new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-						// Add the key-value pair to the dictionary:
-						dict.Add (tmp [0], tmp [1]);//int.Parse(dict[tmp[1]]);
-					}
-					// Read the stream to a string, and write the string to the console.
-					//String line = sr.ReadToEnd();
-				}
-				//if there is a problem, then report the following error message
-			} catch (Exception e) {
-				Debug.Log ("The file could not be read:");
-				Debug.Log (e.Message);
-			}
-
-			//the following are all recorded as string (hence the S at the end) 
-			string citiesS;
-			string coordinatesxS;
-			string coordinatesyS;
-			string distancevectorS;
-			string ncitiesS;
-			string maxdistanceS;
-			string solutionS;
-
-			//grab all of those parameters as strings
-			dict.TryGetValue ("cities", out citiesS);
-			dict.TryGetValue ("coordinatesx", out coordinatesxS);
-			dict.TryGetValue ("coordinatesy", out coordinatesyS);
-			dict.TryGetValue ("distancevector", out distancevectorS);
-			dict.TryGetValue ("ncities", out ncitiesS);
-			dict.TryGetValue ("maxdistance", out maxdistanceS);
-			dict.TryGetValue ("solution", out solutionS);
-
-
-			//convert (most of them) to integers, with variables and literals being arrays and the others single literals
-			tspinstances [k-1].cities = Array.ConvertAll (citiesS.Substring (1, citiesS.Length - 2).Split (','), int.Parse);
-			tspinstances [k-1].coordinatesx = Array.ConvertAll (coordinatesxS.Substring (1, coordinatesxS.Length - 2).Split (','), float.Parse);
-			tspinstances [k-1].coordinatesy = Array.ConvertAll (coordinatesyS.Substring (1, coordinatesyS.Length - 2).Split (','), float.Parse);
-
-			tspinstances [k-1].distancevector = Array.ConvertAll (distancevectorS.Substring (1, distancevectorS.Length - 2).Split (','), int.Parse);
-			tspinstances [k-1].distancematrix = StringToMatrix(distancevectorS);
-
-			tspinstances [k-1].ncities = int.Parse (ncitiesS);
-			tspinstances [k-1].maxdistance = int.Parse (maxdistanceS);
-			tspinstances [k-1].solution = int.Parse (solutionS);
-
-			dict.TryGetValue ("problemID", out tspinstances [k-1].id);
-			dict.TryGetValue ("instanceType", out tspinstances [k-1].type);
-		} */
 	}
 
 	static int[,] StringToMatrix(string matrixS)
@@ -611,7 +404,6 @@ public class GameManager : MonoBehaviour
 					dict.Add(tmp[0], tmp[1]);//int.Parse(dict[tmp[1]]);
 				}
 			}
-
 
 			using (StreamReader sr1 = new StreamReader (folderPathLoad + "param.txt")) 
 			{
@@ -692,10 +484,6 @@ public class GameManager : MonoBehaviour
 		numberOfInstances=Int32.Parse(numberOfInstancesS);
 
 		dictionary.TryGetValue ("instanceRandomization", out instanceRandomizationS);
-		//If instanceRandomization is not included in the parameters file. It generates a randomization.
-		//		if (!dictionary.ContainsKey("instanceRandomization")){
-		//			RandomizeKSInstances();
-		//		} else{
 		
 		 int[] instanceRandomizationNo0 = Array.ConvertAll(instanceRandomizationS.Substring (1, instanceRandomizationS.Length - 2).Split (','), int.Parse);
 		instanceRandomization = new int[instanceRandomizationNo0.Length];
@@ -705,52 +493,7 @@ public class GameManager : MonoBehaviour
 		{
 			instanceRandomization[i] = instanceRandomizationNo0 [i] - 1;
 		}
-		
-		//		}
-
-
-		//Necessary?
-		////Assigns LayoutParameters
-		//string resolutionWidthS;
-		//string resolutionHeightS;
-		string columnsS;
-		string rowsS;
-		//string KSItemRadiusS;
-		//string totalAreaBillS;
-		//string totalAreaWeightS;
-
-		//dictionary.TryGetValue ("resolutionWidth", out resolutionWidthS);
-		//dictionary.TryGetValue ("resolutionHeight", out resolutionHeightS);
-		dictionary.TryGetValue ("columns", out columnsS);
-		dictionary.TryGetValue ("rows", out rowsS);
-		//	dictionary.TryGetValue ("totalAreaBill", out totalAreaBillS);
-		//	dictionary.TryGetValue ("totalAreaWeight", out totalAreaWeightS);
-
-		//dictionary.TryGetValue ("KSItemRadius", out KSItemRadiusS);
-
-
-		//BoardManager.resolutionWidth=Int32.Parse(resolutionWidthS);
-		//BoardManager.resolutionHeight=Int32.Parse(resolutionHeightS);
-		BoardManager.columns=Int32.Parse(columnsS);
-		BoardManager.rows=Int32.Parse(rowsS);
-		//	BoardManager.totalAreaBill=Int32.Parse(totalAreaBillS);
-		//	BoardManager.totalAreaWeight=Int32.Parse(totalAreaWeightS);
-		//BoardManager.KSItemRadius=Convert.ToSingle(KSItemRadiusS);//Int32.Parse(KSItemRadiusS);
 	}
-
-	//66: Wrong function: items are repeated.
-	//Randomizes the sequence of Instances to be shown to the participant adn stores it in: instanceRandomization
-	void RandomizeTSPInstances()
-	{
-		//		instanceRandomization = new int[numberOfTrials/**numberOfBlocks*/];
-		//		for (int i = 0; i < numberOfTrials/**numberOfBlocks*/; i++) 
-		instanceRandomization = new int[numberOfTrials*numberOfBlocks];
-		for (int i = 0; i < numberOfTrials*numberOfBlocks; i++) 
-		{
-			instanceRandomization[i] = Random.Range(0,numberOfInstances);
-		}
-	}
-
 
 	//Takes care of changing the Scene to the next one (Except for when in the setup scene)
 	public static void changeToNextScene(List <Vector3> itemClicks, int answer, int randomYes)
@@ -762,13 +505,14 @@ public class GameManager : MonoBehaviour
 		}else if (escena == "LotteryTrial")
 		{
 			string itemsSelected = extractItemsSelected(itemClicks);
-			if (answer == 2)
+			if (answer == 3)
 			{
 				save(itemsSelected, answer, timeQuestion, randomYes, "");
 			}
 			else
 			{
 				save(itemsSelected, answer, timeAnswer - tiempo, randomYes, "");
+				ans_end = timeStamp();
 				saveTimeStamp("ParticipantAnswer");
 			}
 			//saveClicks (itemClicks);
@@ -783,30 +527,6 @@ public class GameManager : MonoBehaviour
 			SceneManager.LoadScene("LotteryTrial");
 		}
 
-		/*BoardManager.keysON = false;
-		if (escena == "SetUp") {
-			Debug.Log ("SetUp");
-			saveHeaders ();
-			SceneManager.LoadScene ("Trial");
-		} else if (escena == "Trial") {
-			//66 Update distanceTravelled Value or delete to previous code...
-			Distancetravelled = BoardManager.distanceTravelledValue;
-			SceneManager.LoadScene ("TrialAnswer");
-		} else if (escena == "TrialAnswer") {
-			string itemsSelected= extractItemsSelected (itemClicks);
-			if (answer == 2) {
-				save (itemsSelected, answer, timeQuestion, randomYes, "");
-			} else {
-				save (itemsSelected, answer, timeAnswer - tiempo, randomYes, "");
-				saveTimeStamp ("ParticipantAnswer");
-			}
-			//saveClicks (itemClicks);
-			SceneManager.LoadScene ("InterTrialRest");
-		} else if (escena == "InterTrialRest") {
-			changeToNextTrial ();
-		} else if (escena == "InterBlockRest") {
-			SceneManager.LoadScene ("Trial");
-		}*/
 	}
 	//Redirects to the next scene depending if the trials or blocks are over.
 	private static void changeToNextTrial()
@@ -827,7 +547,8 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	/// <returns>The items selected.</returns>
 	/// <param name="itemClicks"> Sequence of clicks on the items.</param>
-	private static string extractItemsSelected (List <Vector3> itemClicks){
+	private static string extractItemsSelected (List <Vector3> itemClicks)
+	{
 		List<int> itemsIn = new List<int>();
 		foreach(Vector3 clickito in itemClicks){
 			if (clickito.z == 1) {
@@ -849,28 +570,6 @@ public class GameManager : MonoBehaviour
 
 		return itemsInS;
 	}
-
-
-	//Randomizes The Location of the Yes/No button for a whole block.
-	/*void randomizeButtons()
-	{
-		buttonRandomization = new int[numberOfTrials];
-		List<int> buttonRandomizationTemp = new List<int> ();
-		for (int i = 0; i < numberOfTrials; i++){
-			if (i % 2 == 0) {
-				buttonRandomizationTemp.Add(0);
-			} else {
-				buttonRandomizationTemp.Add(1);
-			}
-		}
-		for (int i = 0; i < numberOfTrials; i++) {
-			int randomIndex = Random.Range (0, buttonRandomizationTemp.Count);
-			buttonRandomization [i] = buttonRandomizationTemp [randomIndex];
-			buttonRandomizationTemp.RemoveAt (randomIndex);
-		}
-	}*/
-
-
 
 	/// <summary>
 	/// Starts the stopwatch. Time of each event is calculated according to this moment.
@@ -898,7 +597,6 @@ public class GameManager : MonoBehaviour
 		return stamp;
 	}
 
-
 	//Updates the timer (including the graphical representation)
 	//If time runs out in the trial or the break scene. It switches to the next scene.
 	void startTimer()
@@ -908,8 +606,6 @@ public class GameManager : MonoBehaviour
 		if (showTimer) 
 		{
 			boardScript.updateTimer();
-			//	RectTransform timer = GameObject.Find ("Timer").GetComponent<RectTransform> ();
-			//	timer.sizeDelta = new Vector2 (timerWidth * (tiempo / timeTrial), timer.rect.height);
 		}
 
 		//When the time runs out:
@@ -929,7 +625,7 @@ public class GameManager : MonoBehaviour
 		Debug.Log (errorDetails);
 
 		BoardManager.keysON = false;
-		int answer = 3;
+		int answer = 4;
 		int randomYes = -1;
 		save ("", answer, timeTrial, randomYes, errorDetails);
 		changeToNextTrial ();

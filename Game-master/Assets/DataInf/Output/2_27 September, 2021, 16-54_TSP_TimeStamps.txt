@@ -1,0 +1,4 @@
+PartcipantID:2
+InitialTimeStamp:16-54-26-072
+no answer = 0; lottery1 = 1(left); lottery2 = 2(right)
+block;trial;eventType;elapsedTime(ms)

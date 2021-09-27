@@ -1,0 +1,15 @@
+PartcipantID:132
+InitialTimeStamp:16-31-05-756
+no answer = 0; lottery1 = 1(left); lottery2 = 2(right)
+block;trial;eventType;elapsedTime(ms)
+name 3S70R; Block1; Instance312; Answer:2; ParticipantAnswer:2410; time taken:2349
+name D6R; Block1; Instance14; Answer:1; ParticipantAnswer:4399; time taken:1871
+name 3S36L; Block1; Instance116; Answer:2; ParticipantAnswer:5135; time taken:619
+name 4S61L; Block1; Instance222; Answer:1; ParticipantAnswer:5991; time taken:741
+name 4S9L; Block1; Instance170; Answer:1; ParticipantAnswer:6687; time taken:580
+name D2R; Block1; Instance10; Answer:2; ParticipantAnswer:7327; time taken:523
+name 4S77R; Block1; Instance400; Answer:2; ParticipantAnswer:8368; time taken:926
+name 3S36R; Block1; Instance278; Answer:2; ParticipantAnswer:9406; time taken:920
+name D20L; Block1; Instance64; Answer:2; ParticipantAnswer:11216; time taken:1695
+name 4S5R; Block1; Instance328; Answer:2; ParticipantAnswer:11918; time taken:588
+name D35L; Block1; Instance79; Answer:1; ParticipantAnswer:12367; time taken:332

@@ -1,0 +1,40 @@
+PartcipantID:5
+InitialTimeStamp:16-57-24-944
+no answer = 0; lottery1 = 1(left); lottery2 = 2(right)
+block;trial;eventType;elapsedTime(ms)
+name D24L; Block1; Instance68; Answer:2; ParticipantAnswer:1779; time taken:1724
+name 3S29L; Block1; Instance109; Answer:2; ParticipantAnswer:2839; time taken:935
+name 4S76R; Block1; Instance399; Answer:2; ParticipantAnswer:3407; time taken:452
+name D34R; Block1; Instance42; Answer:2; ParticipantAnswer:3767; time taken:243
+name D29L; Block1; Instance73; Answer:2; ParticipantAnswer:4294; time taken:409
+name D35L; Block1; Instance79; Answer:2; ParticipantAnswer:4703; time taken:285
+name D1R; Block1; Instance9; Answer:2; ParticipantAnswer:5455; time taken:638
+name D2L; Block1; Instance46; Answer:2; ParticipantAnswer:6080; time taken:506
+name 4S43R; Block1; Instance366; Answer:2; ParticipantAnswer:6583; time taken:381
+name 3S69R; Block1; Instance311; Answer:2; ParticipantAnswer:6896; time taken:195
+name 4S51L; Block1; Instance212; Answer:2; ParticipantAnswer:7176; time taken:163
+name 4S28R; Block1; Instance351; Answer:2; ParticipantAnswer:7424; time taken:133
+name 3S45R; Block1; Instance287; Answer:2; ParticipantAnswer:7823; time taken:280
+name 4S45R; Block1; Instance368; Answer:2; ParticipantAnswer:8016; time taken:68
+name 4S49L; Block1; Instance210; Answer:2; ParticipantAnswer:8343; time taken:211
+name 4S62L; Block1; Instance223; Answer:2; ParticipantAnswer:8519; time taken:57
+name D31L; Block1; Instance75; Answer:2; ParticipantAnswer:8697; time taken:60
+name D12L; Block1; Instance56; Answer:2; ParticipantAnswer:8879; time taken:62
+name 3S2L; Block1; Instance82; Answer:2; ParticipantAnswer:9103; time taken:105
+name 4S57L; Block1; Instance218; Answer:2; ParticipantAnswer:9288; time taken:65
+name 4S42L; Block1; Instance203; Answer:2; ParticipantAnswer:9463; time taken:58
+name 4S36L; Block1; Instance197; Answer:2; ParticipantAnswer:9640; time taken:59
+name 4S5R; Block1; Instance328; Answer:2; ParticipantAnswer:9819; time taken:60
+name 3S60R; Block1; Instance302; Answer:2; ParticipantAnswer:9997; time taken:59
+name 3S50R; Block1; Instance292; Answer:2; ParticipantAnswer:10178; time taken:60
+name 3S2R; Block1; Instance244; Answer:2; ParticipantAnswer:10431; time taken:134
+name 3S49R; Block1; Instance291; Answer:2; ParticipantAnswer:10623; time taken:72
+name D7L; Block1; Instance51; Answer:2; ParticipantAnswer:10807; time taken:67
+name 4S34R; Block1; Instance357; Answer:2; ParticipantAnswer:10984; time taken:57
+name 4S22L; Block1; Instance183; Answer:2; ParticipantAnswer:11160; time taken:56
+name 4S59R; Block1; Instance382; Answer:2; ParticipantAnswer:11340; time taken:59
+name 3S53L; Block1; Instance133; Answer:2; ParticipantAnswer:11518; time taken:58
+name 4S78R; Block1; Instance401; Answer:2; ParticipantAnswer:11696; time taken:60
+name D8R; Block1; Instance16; Answer:2; ParticipantAnswer:11926; time taken:109
+name D5R; Block1; Instance13; Answer:2; ParticipantAnswer:12108; time taken:62
+name 4S33L; Block1; Instance194; Answer:2; ParticipantAnswer:12351; time taken:125
